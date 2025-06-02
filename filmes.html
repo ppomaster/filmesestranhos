@@ -12,7 +12,7 @@
     padding: 10px; border-radius: 5px; border: none; margin: 5px;
     font-size: 16px;
   }
-  input { width: 60%; }
+  input { width: 40%; }
   button { background-color: #00ffaa; color: #121212; cursor: pointer; }
   button:hover { background-color: #00cc88; }
   .container {
@@ -37,6 +37,12 @@
     margin-top: 8px;
     cursor: pointer;
   }
+  .opcoes {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
 </style>
 </head>
 <body>
@@ -45,8 +51,11 @@
 
 <div class="form">
   <input type="text" id="input-filme" placeholder="Digite o nome do filme">
-  <button onclick="adicionarFilme()">Adicionar</button>
+  <input type="text" id="input-ano" placeholder="Ano (opcional)">
+  <button onclick="buscarOpcoes()">Buscar</button>
 </div>
+
+<div id="opcoes" class="opcoes"></div>
 
 <div class="container" id="lista-filmes"></div>
 
@@ -55,27 +64,82 @@ const apiSheet = 'https://sheetdb.io/api/v1/dlats2maboyum';
 const tmdbKey = '9aa24d4f0459c164a27019c4c4504ff3';
 
 const lista = document.getElementById('lista-filmes');
+const divOpcoes = document.getElementById('opcoes');
 
-async function buscarTMDB(filme) {
-  const busca = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${tmdbKey}&query=${encodeURIComponent(filme)}&language=pt-BR`);
+async function buscarTMDB(filme, ano) {
+  const url = `https://api.themoviedb.org/3/search/movie?api_key=${tmdbKey}&query=${encodeURIComponent(filme)}${ano ? '&year=' + ano : ''}&language=pt-BR`;
+  const busca = await fetch(url);
   const dadosBusca = await busca.json();
-  if (dadosBusca.results && dadosBusca.results.length > 0) {
-    const m = dadosBusca.results[0];
-    const detalhes = await fetch(`https://api.themoviedb.org/3/movie/${m.id}?api_key=${tmdbKey}&language=pt-BR`);
-    const det = await detalhes.json();
+  return dadosBusca.results || [];
+}
 
-    return {
-      titulo: m.title,
-      poster: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : '',
-      sinopse: m.overview || 'Sem sinopse.',
-      ano: m.release_date ? m.release_date.split('-')[0] : 'Desconhecido',
-      id: m.id,
-      avaliacao: det.vote_average || '',
-      genero: det.genres.map(g => g.name).join(', '),
-      duracao: det.runtime ? det.runtime + ' min' : ''
-    };
+async function buscarOpcoes() {
+  const nome = document.getElementById('input-filme').value.trim();
+  const ano = document.getElementById('input-ano').value.trim();
+
+  if (!nome) {
+    alert('Digite o nome do filme');
+    return;
   }
-  return null;
+
+  const filmes = await buscarTMDB(nome, ano);
+  divOpcoes.innerHTML = '';
+
+  if (filmes.length === 0) {
+    divOpcoes.innerHTML = '<p>Nenhum filme encontrado.</p>';
+    return;
+  }
+
+  filmes.forEach(f => {
+    const poster = f.poster_path ? `https://image.tmdb.org/t/p/w500${f.poster_path}` : '';
+    const item = document.createElement('div');
+    item.className = 'card';
+    item.innerHTML = `
+      <img src="${poster}" alt="${f.title}">
+      <h3>${f.title} (${f.release_date ? f.release_date.split('-')[0] : 'N/A'})</h3>
+      <p>${f.overview || 'Sem sinopse.'}</p>
+      <button onclick="adicionarFilme(${f.id})">Adicionar</button>
+    `;
+    divOpcoes.appendChild(item);
+  });
+}
+
+async function obterDetalhes(id) {
+  const detalhes = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${tmdbKey}&language=pt-BR`);
+  return await detalhes.json();
+}
+
+async function adicionarFilme(id) {
+  const det = await obterDetalhes(id);
+
+  const body = {
+    data: [{
+      Titulo: det.title,
+      Poster: det.poster_path ? `https://image.tmdb.org/t/p/w500${det.poster_path}` : '',
+      Sinopse: det.overview || 'Sem sinopse.',
+      Ano: det.release_date ? det.release_date.split('-')[0] : 'Desconhecido',
+      ID: det.id,
+      Avaliacao: det.vote_average || '',
+      Genero: det.genres.map(g => g.name).join(', '),
+      Duracao: det.runtime ? det.runtime + ' min' : ''
+    }]
+  };
+
+  const res = await fetch(apiSheet, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  if (res.ok) {
+    alert('Filme adicionado!');
+    divOpcoes.innerHTML = '';
+    document.getElementById('input-filme').value = '';
+    document.getElementById('input-ano').value = '';
+    carregarFilmes();
+  } else {
+    alert('Erro ao adicionar filme.');
+  }
 }
 
 async function carregarFilmes() {
@@ -94,48 +158,6 @@ async function carregarFilmes() {
     `;
     lista.appendChild(div);
   });
-}
-
-async function adicionarFilme() {
-  const nome = document.getElementById('input-filme').value.trim();
-  if (!nome) {
-    alert('Digite o nome do filme');
-    return;
-  }
-
-  const dadosFilme = await buscarTMDB(nome);
-
-  if (!dadosFilme) {
-    alert('Filme não encontrado na API');
-    return;
-  }
-
-  const body = {
-    data: [{
-      Titulo: dadosFilme.titulo,
-      Poster: dadosFilme.poster,
-      Sinopse: dadosFilme.sinopse,
-      Ano: dadosFilme.ano,
-      ID: dadosFilme.id,
-      Avaliacao: dadosFilme.avaliacao,
-      Genero: dadosFilme.genero,
-      Duracao: dadosFilme.duracao
-    }]
-  };
-
-  const res = await fetch(apiSheet, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-
-  if (res.ok) {
-    alert('Filme adicionado!');
-    document.getElementById('input-filme').value = '';
-    carregarFilmes();
-  } else {
-    alert('Erro ao adicionar filme.');
-  }
 }
 
 async function deletarFilme(titulo) {
