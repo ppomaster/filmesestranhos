@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro - Filmes Estranhos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-container">
+    <h1>Criar Conta</h1>
+    <input type="text" id="usuario" placeholder="Usuário">
+    <input type="password" id="senha" placeholder="Senha">
+    <button onclick="cadastrar()">Cadastrar</button>
+    <a href="login.html">Voltar</a>
+  </div>
+
+  <script>
+    const API = "https://sheetdb.io/api/v1/dlats2maboyum?sheet=página2";
+
+    function cadastrar() {
+      const usuario = document.getElementById('usuario').value.trim();
+      const senha = document.getElementById('senha').value.trim();
+
+      if (!usuario || !senha) {
+        alert("Preencha todos os campos.");
+        return;
+      }
+
+      fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: [{ usuario, senha }] })
+      }).then(() => {
+        alert("Cadastro realizado com sucesso!");
+        window.location.href = "login.html";
+      });
+    }
+  </script>
+</body>
+</html>
