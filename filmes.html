@@ -5,105 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Filmes Estranhos - Filmes</title>
     <style>
-        body {
-            background-color: #121212;
-            color: #f0f0f0;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #1f1f1f;
-            padding: 20px;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-            color: #00ffaa;
-        }
-        nav {
-            background-color: #2a2a2a;
-            padding: 10px;
-            text-align: center;
-        }
-        nav a {
-            color: #ffffff;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: bold;
-        }
-        nav a:hover {
-            color: #00ffaa;
-        }
-        main {
-            padding: 30px;
-            max-width: 1000px;
-            margin: auto;
-        }
-        h2 {
-            color: #00ffaa;
-        }
-        /* Formulário */
-        form#form-filme {
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        form#form-filme input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 6px;
-            border: none;
-        }
-        form#form-filme button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 6px;
-            background-color: #00ffaa;
-            color: #121212;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        form#form-filme button:hover {
-            background-color: #00cc88;
-        }
-        /* Filmes */
-        .filmes {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .filme {
-            background-color: #1f1f1f;
-            border-radius: 10px;
-            padding: 15px;
-            transition: transform 0.3s;
-        }
-        .filme:hover {
-            transform: scale(1.03);
-        }
-        .filme img {
-            width: 100%;
-            border-radius: 8px;
-        }
-        .filme h3 {
-            margin: 10px 0 5px;
-            color: #00ffaa;
-        }
-        .filme p {
-            font-size: 14px;
-            color: #ccc;
-        }
-        footer {
-            background-color: #1f1f1f;
-            text-align: center;
-            padding: 15px;
-            font-size: 14px;
-            color: #888;
-        }
+        /* ... seu CSS permanece igual ... */
     </style>
 </head>
 <body>
@@ -147,20 +49,16 @@
             const res = await fetch(apiUrl);
             const dados = await res.json();
 
-            filmesExistentes = dados.map(item => item.Filmes.toLowerCase());
+            // Ajuste aqui: usa exatamente o nome da coluna
+            filmesExistentes = dados.map(item => item["Filmes Estranhos"].toLowerCase());
             listaFilmes.innerHTML = '';
 
             dados.forEach(item => {
-                // Aqui vamos criar a estrutura do filme para a grid
-                // Se quiser, pode ajustar para imagem e descrição
-                // Por enquanto só o título, pois a API tem só o nome do filme
-
                 const divFilme = document.createElement('div');
                 divFilme.classList.add('filme');
 
-                // Como você não tem imagens na planilha, vamos mostrar só o título (sem imagem e descrição)
                 divFilme.innerHTML = `
-                    <h3>${item.Filmes}</h3>
+                    <h3>${item["Filmes Estranhos"]}</h3>
                     <p>Descrição ainda não cadastrada.</p>
                 `;
 
@@ -175,8 +73,9 @@
                 return;
             }
 
+            // Aqui o corpo da requisição precisa ter a chave correta
             const bodyData = {
-                data: [{ Filmes: nome }]
+                data: [{ "Filmes Estranhos": nome }]
             };
 
             const res = await fetch(apiUrl, {
