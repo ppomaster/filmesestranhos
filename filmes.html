@@ -1,116 +1,60 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Filmes Estranhos</title>
-<style>
-body{background:#111;color:#eee;font-family:sans-serif;margin:0;}
-header{background:#222;padding:20px;text-align:center;}
-header h1{margin:0;color:#0f0;}
-nav{text-align:center;background:#333;padding:10px;}
-nav a{color:#fff;margin:0 10px;text-decoration:none;}
-main{padding:20px;max-width:1000px;margin:auto;}
-form{display:flex;gap:10px;margin-bottom:20px;}
-input{flex:1;padding:10px;}
-button{padding:10px;background:#0f0;border:none;cursor:pointer;}
-button:hover{background:#0c0;}
-.filmes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
-.filme{background:#222;padding:10px;border-radius:10px;display:flex;flex-direction:column;}
-.filme img{max-width:100%;border-radius:8px;}
-.filme h3{margin:10px 0 5px;color:#0f0;}
-.filme p{flex:1;}
-.excluir{background:#f33;border:none;padding:5px;border-radius:5px;color:#fff;margin-top:10px;cursor:pointer;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmes Estranhos</title>
 </head>
 <body>
+    <h1>Lista de Filmes Estranhos</h1>
 
-<header><h1>Filmes Estranhos</h1></header>
-<nav><a href="index.html">Início</a> | <a href="filmes.html">Filmes</a></nav>
+    <ul id="lista-filmes"></ul>
 
-<main>
-<h2>Filmes</h2>
-<form id="form">
-  <input type="text" id="input" placeholder="Digite o nome do filme" required>
-  <button type="submit">Adicionar</button>
-</form>
-<div class="filmes" id="lista"></div>
-</main>
+    <h2>Adicionar Filme</h2>
+    <input type="text" id="input-filme" placeholder="Nome do filme">
+    <button onclick="adicionarFilme()">Adicionar</button>
 
-<script>
-const sheetAPI = "https://sheetdb.io/api/v1/dlats2maboyum";
-const tmdbKey = "9aa24d4f0459c164a27019c4c4504ff3";
-const lista = document.getElementById('lista');
-const form = document.getElementById('form');
-const input = document.getElementById('input');
-let filmes=[];
+    <script>
+        const apiUrl = 'https://sheetdb.io/api/v1/dlats2maboyum';
+        const lista = document.getElementById('lista-filmes');
 
-async function carregar(){
-  const res = await fetch(sheetAPI);
-  const data = await res.json();
-  filmes = data.map(f=>f.Titulo.toLowerCase());
-  lista.innerHTML = '';
-  data.forEach(f=>{
-    const div = document.createElement('div');
-    div.className = 'filme';
-    div.innerHTML = `
-      <img src="${f.Poster || 'https://via.placeholder.com/300x450'}">
-      <h3>${f.Titulo}</h3>
-      <p>${f.Sinopse || 'Sem descrição.'}</p>
-      <small>Lançamento: ${f.Lancamento || 'Desconhecido'}</small>
-      <button class="excluir" data-titulo="${encodeURIComponent(f.Titulo)}">Excluir</button>`;
-    lista.appendChild(div);
-  });
-  document.querySelectorAll('.excluir').forEach(b=>b.onclick=excluir);
-}
+        function carregarFilmes() {
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    lista.innerHTML = '';
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = item.Titulo;
+                        lista.appendChild(li);
+                    });
+                });
+        }
 
-async function buscarFilme(nome){
-  const url = `https://api.themoviedb.org/3/search/movie?api_key=${tmdbKey}&language=pt-BR&query=${encodeURIComponent(nome)}`;
-  const res = await fetch(url);
-  const json = await res.json();
-  if(json.results && json.results.length){
-    const f = json.results[0];
-    return {
-      Titulo: f.title,
-      Sinopse: f.overview || 'Sem descrição.',
-      Poster: f.poster_path ? `https://image.tmdb.org/t/p/w500${f.poster_path}` : '',
-      Lancamento: f.release_date || 'Desconhecido'
-    }
-  }
-  return null;
-}
+        function adicionarFilme() {
+            const nome = document.getElementById('input-filme').value.trim();
+            if (!nome) {
+                alert('Digite o nome do filme!');
+                return;
+            }
 
-async function adicionar(e){
-  e.preventDefault();
-  const nome = input.value.trim();
-  if(!nome) return;
-  if(filmes.includes(nome.toLowerCase())){alert('Já está na lista.');return;}
-  const filme = await buscarFilme(nome);
-  if(!filme){alert('Não encontrado.');return;}
-  const body = {data:[filme]};
-  const res = await fetch(sheetAPI, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify(body)
-  });
-  if(res.ok){
-    input.value='';
-    carregar();
-  }else{
-    alert('Erro ao adicionar.');
-  }
-}
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: [{ Titulo: nome }] })
+            })
+            .then(res => {
+                if (res.ok) {
+                    alert('Filme adicionado!');
+                    document.getElementById('input-filme').value = '';
+                    carregarFilmes();
+                } else {
+                    alert('Erro ao adicionar filme!');
+                }
+            });
+        }
 
-async function excluir(e){
-  const titulo = decodeURIComponent(e.target.dataset.titulo);
-  const url = `${sheetAPI}/Titulo/${encodeURIComponent(titulo)}`;
-  const res = await fetch(url, {method:"DELETE"});
-  if(res.ok) carregar();
-  else alert('Erro ao excluir.');
-}
-
-form.onsubmit = adicionar;
-carregar();
-</script>
-
+        carregarFilmes();
+    </script>
 </body>
 </html>
