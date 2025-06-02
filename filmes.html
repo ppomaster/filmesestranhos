@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Filmes Estranhos - Filmes</title>
     <style>
         body {
@@ -43,6 +43,34 @@
         h2 {
             color: #00ffaa;
         }
+        /* Formulário */
+        form#form-filme {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        form#form-filme input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: none;
+        }
+        form#form-filme button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #00ffaa;
+            color: #121212;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        form#form-filme button:hover {
+            background-color: #00cc88;
+        }
+        /* Filmes */
         .filmes {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -64,6 +92,10 @@
         .filme h3 {
             margin: 10px 0 5px;
             color: #00ffaa;
+        }
+        .filme p {
+            font-size: 14px;
+            color: #ccc;
         }
         footer {
             background-color: #1f1f1f;
@@ -88,29 +120,91 @@
 
     <main>
         <h2>🎬 Lista de Filmes Estranhos</h2>
-        <div class="filmes">
-            <div class="filme">
-                <img src="https://upload.wikimedia.org/wikipedia/pt/f/f4/Eraserhead.jpg" alt="Eraserhead">
-                <h3>Eraserhead (1977)</h3>
-                <p>Um filme surreal e desconcertante sobre medo, paternidade e isolamento.</p>
-            </div>
-            <div class="filme">
-                <img src="https://upload.wikimedia.org/wikipedia/en/0/05/Enter_the_Void_poster.png" alt="Enter the Void">
-                <h3>Enter The Void (2009)</h3>
-                <p>Uma viagem psicodélica pelo além, através dos olhos de um espírito no Japão.</p>
-            </div>
-            <div class="filme">
-                <img src="https://upload.wikimedia.org/wikipedia/pt/3/36/Donnie_Darko_poster.jpg" alt="Donnie Darko">
-                <h3>Donnie Darko (2001)</h3>
-                <p>Um thriller psicológico que mistura viagem no tempo, esquizofrenia e existencialismo.</p>
-            </div>
-            <!-- Você pode adicionar mais filmes aqui -->
+
+        <form id="form-filme">
+            <input type="text" id="input-filme" placeholder="Nome do filme" required />
+            <button type="submit">Adicionar Filme</button>
+        </form>
+
+        <div class="filmes" id="lista-filmes">
+            <!-- Filmes vão aparecer aqui via JS -->
         </div>
     </main>
 
     <footer>
         &copy; 2025 Filmes Estranhos. Todos os direitos reservados.
     </footer>
+
+    <script>
+        const apiUrl = 'https://sheetdb.io/api/v1/dlats2maboyum';
+        const listaFilmes = document.getElementById('lista-filmes');
+        const form = document.getElementById('form-filme');
+        const inputFilme = document.getElementById('input-filme');
+        let filmesExistentes = [];
+
+        // Função para buscar filmes da API e mostrar na tela
+        async function carregarFilmes() {
+            const res = await fetch(apiUrl);
+            const dados = await res.json();
+
+            filmesExistentes = dados.map(item => item.Filmes.toLowerCase());
+            listaFilmes.innerHTML = '';
+
+            dados.forEach(item => {
+                // Aqui vamos criar a estrutura do filme para a grid
+                // Se quiser, pode ajustar para imagem e descrição
+                // Por enquanto só o título, pois a API tem só o nome do filme
+
+                const divFilme = document.createElement('div');
+                divFilme.classList.add('filme');
+
+                // Como você não tem imagens na planilha, vamos mostrar só o título (sem imagem e descrição)
+                divFilme.innerHTML = `
+                    <h3>${item.Filmes}</h3>
+                    <p>Descrição ainda não cadastrada.</p>
+                `;
+
+                listaFilmes.appendChild(divFilme);
+            });
+        }
+
+        // Função para adicionar filme na planilha via API (evitando duplicatas)
+        async function adicionarFilme(nome) {
+            if (filmesExistentes.includes(nome.toLowerCase())) {
+                alert('Esse filme já está na lista!');
+                return;
+            }
+
+            const bodyData = {
+                data: [{ Filmes: nome }]
+            };
+
+            const res = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyData)
+            });
+
+            if (res.ok) {
+                alert('Filme adicionado com sucesso!');
+                inputFilme.value = '';
+                carregarFilmes();
+            } else {
+                alert('Erro ao adicionar filme. Tente novamente.');
+            }
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const filme = inputFilme.value.trim();
+            if (filme) {
+                adicionarFilme(filme);
+            }
+        });
+
+        // Carrega os filmes quando abrir a página
+        carregarFilmes();
+    </script>
 
 </body>
 </html>
