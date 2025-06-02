@@ -1,46 +1,36 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Login - Filmes Estranhos</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="login-container">
-    <h1>Filmes Estranhos</h1>
+  <div class="container">
+    <h1>Login</h1>
     <input type="text" id="usuario" placeholder="Usuário">
     <input type="password" id="senha" placeholder="Senha">
-    <button onclick="login()">Entrar</button>
-    <a href="registro.html">Criar conta</a>
-    <a href="recuperar.html">Esqueci minha senha</a>
+    <button onclick="fazerLogin()">Entrar</button>
+    <p>Não tem conta? <a href="registro.html">Cadastre-se</a></p>
   </div>
 
   <script>
-    const API = "https://sheetdb.io/api/v1/dlats2maboyum?sheet=usuarios";
-
-    function login() {
+    async function fazerLogin() {
       const usuario = document.getElementById('usuario').value.trim();
       const senha = document.getElementById('senha').value.trim();
 
-      if (!usuario || !senha) {
-        alert("Preencha usuário e senha.");
-        return;
-      }
+      const response = await fetch('https://sheetdb.io/api/v1/dlats2maboyum?sheet=usuarios');
+      const data = await response.json();
 
-      fetch(API)
-        .then(res => res.json())
-        .then(data => {
-          const user = data.find(u => u.usuario === usuario && u.senha === senha);
-          if (user) {
-            localStorage.setItem('usuario', usuario);
-            localStorage.setItem('admin', usuario === 'ppomaster' ? 'true' : 'false');
-            window.location.href = "filmes.html";
-          } else {
-            alert("Usuário ou senha inválidos.");
-          }
-        })
-        .catch(() => alert("Erro ao acessar a API."));
+      const user = data.find(item => item.usuario === usuario && item.senha === senha);
+
+      if (user) {
+        localStorage.setItem('usuarioLogado', usuario);
+        window.location.href = 'filmes.html';
+      } else {
+        alert('Usuário ou senha inválidos');
+      }
     }
   </script>
 </body>
