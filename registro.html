@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro - Filmes Estranhos</title>
+  <title>Cadastro</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
   </div>
 
   <script>
-    const API = "https://sheetdb.io/api/v1/dlats2maboyum?sheet=página2";
+    const API = "https://sheetdb.io/api/v1/dlats2maboyum?sheet=usuarios";
 
     function cadastrar() {
       const usuario = document.getElementById('usuario').value.trim();
@@ -31,9 +31,14 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ data: [{ usuario, senha }] })
-      }).then(() => {
-        alert("Cadastro realizado com sucesso!");
-        window.location.href = "login.html";
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("Cadastro realizado!");
+          window.location.href = "login.html";
+        } else {
+          alert("Erro ao cadastrar.");
+        }
       });
     }
   </script>
