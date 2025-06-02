@@ -1,39 +1,312 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filmes Estranhos - Filmes</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Filmes Estranhos - Filmes</title>
+<style>
+  body {
+    background: #121212;
+    color: #eee;
+    font-family: Arial, sans-serif;
+    margin:0; padding:0;
+  }
+  header, footer {
+    background: #1f1f1f;
+    text-align:center;
+    padding: 15px 0;
+    color: #00ffaa;
+  }
+  nav {
+    background:#222;
+    display:flex;
+    justify-content:center;
+    gap: 20px;
+    padding: 10px 0;
+  }
+  nav a {
+    color:#eee;
+    text-decoration:none;
+    font-weight:bold;
+  }
+  nav a:hover {
+    color:#00ffaa;
+  }
+  main {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+  }
+  #tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  #tabs button {
+    background: #222;
+    border:none;
+    padding: 10px 20px;
+    color: #eee;
+    cursor:pointer;
+    border-radius: 5px 5px 0 0;
+  }
+  #tabs button.active {
+    background: #00ffaa;
+    color: #121212;
+  }
+  .tab-content {
+    background: #1f1f1f;
+    padding: 20px;
+    border-radius: 0 5px 5px 5px;
+  }
+  form#form-filme {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  form#form-filme input[type="text"],
+  form#form-filme input[type="number"] {
+    flex: 1;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 16px;
+  }
+  form#form-filme button {
+    padding: 10px 15px;
+    background: #00ffaa;
+    border: none;
+    border-radius: 6px;
+    color: #121212;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .filmes-list, .vistos-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 15px;
+  }
+  .filme-card {
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .filme-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    background: #111;
+  }
+  .filme-info {
+    padding: 10px;
+  }
+  .filme-info h3 {
+    margin: 0 0 5px 0;
+    color: #00ffaa;
+  }
+  .filme-info p {
+    font-size: 14px;
+    color: #ccc;
+  }
+  .filme-actions {
+    padding: 10px;
+    text-align: right;
+  }
+  button.btn-excluir, button.btn-visto {
+    background: #f44336;
+    border: none;
+    padding: 7px 12px;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  button.btn-visto {
+    background: #008000;
+    margin-right: 10px;
+  }
+  button.btn-visto.marked {
+    background: #555;
+    cursor: default;
+  }
+  @media(max-width:600px) {
+    .filme-card img {
+      height: 200px;
+    }
+  }
+</style>
 </head>
 <body>
 
-    <header>
-        <h1>🎥 Filmes Estranhos</h1>
-    </header>
+<header><h1>🎥 Filmes Estranhos</h1></header>
 
-    <nav>
-        <a href="index.html">Início</a>
-        <a href="filmes.html">Filmes</a>
-        <a href="login.html">Login</a>
-    </nav>
+<nav>
+  <a href="index.html">Início</a>
+  <a href="filmes.html">Filmes</a>
+  <a href="login.html">Login</a>
+</nav>
 
-    <main>
-        <h2>🎬 Lista de Filmes</h2>
+<main>
+  <div id="tabs">
+    <button data-tab="filmes" class="active">Filmes</button>
+    <button data-tab="vistos" id="btn-tab-vistos" style="display:none;">Já Vistos</button>
+  </div>
 
-        <form id="form-filme">
-            <input type="text" id="input-filme" placeholder="Digite o nome do filme" required>
-            <input type="text" id="input-ano" placeholder="Ano (opcional)">
-            <button type="submit">Adicionar Filme</button>
-        </form>
+  <div id="filmes" class="tab-content">
+    <form id="form-filme" style="display:none;">
+      <input type="text" id="input-filme" placeholder="Nome do filme" required />
+      <input type="number" id="input-ano" placeholder="Ano (opcional)" min="1900" max="2100"/>
+      <button type="submit">Buscar / Adicionar</button>
+    </form>
 
-        <div class="filmes" id="lista-filmes"></div>
-    </main>
+    <div class="filmes-list" id="lista-filmes"></div>
+  </div>
 
-    <footer>
-        &copy; 2025 Filmes Estranhos. Todos os direitos reservados.
-    </footer>
+  <div id="vistos" class="tab-content" style="display:none;">
+    <div class="vistos-list" id="lista-vistos"></div>
+  </div>
+</main>
 
-    <script src="filmes.js"></script>
-</body>
-</html>
+<footer>&copy; 2025 Filmes Estranhos. Todos os direitos reservados.</footer>
+
+<script>
+const apiSheet = 'https://sheetdb.io/api/v1/dlats2maboyum';
+const apiOMDbKey = '6cbfb854';
+const user = JSON.parse(localStorage.getItem('user'));
+if (!user) window.location.href = 'login.html';
+
+const isAdmin = user.username === 'ppomaster';
+const form = document.getElementById('form-filme');
+const inputFilme = document.getElementById('input-filme');
+const inputAno = document.getElementById('input-ano');
+const listaFilmes = document.getElementById('lista-filmes');
+const listaVistos = document.getElementById('lista-vistos');
+const btnTabVistos = document.getElementById('btn-tab-vistos');
+const tabsButtons = document.querySelectorAll('#tabs button');
+const tabFilmes = document.getElementById('filmes');
+const tabVistos = document.getElementById('vistos');
+
+if(isAdmin) form.style.display = 'flex';
+btnTabVistos.style.display = 'inline-block';
+
+tabsButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabsButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if(btn.dataset.tab === 'filmes'){
+      tabFilmes.style.display = 'block';
+      tabVistos.style.display = 'none';
+    } else {
+      tabFilmes.style.display = 'none';
+      tabVistos.style.display = 'block';
+      carregarJaVistos();
+    }
+  });
+});
+
+async function carregarFilmes(){
+  listaFilmes.innerHTML = 'Carregando...';
+  const res = await fetch(apiSheet);
+  if(!res.ok) {
+    listaFilmes.innerHTML = 'Erro ao carregar filmes.';
+    return;
+  }
+  const dados = await res.json();
+  listaFilmes.innerHTML = '';
+
+  if(!dados.length) {
+    listaFilmes.innerHTML = '<p>Nenhum filme cadastrado.</p>';
+    return;
+  }
+
+  for(const item of dados){
+    if(!item.Filmes) continue;
+
+    const imdbID = item.imdbID || '';
+    const titulo = item.Filmes;
+    const ano = item.Ano || '';
+    const sinopse = item.Sinopse || '';
+    const poster = item.Poster || '';
+
+    const card = document.createElement('div');
+    card.className = 'filme-card';
+
+    card.innerHTML = `
+      <img src="${poster || 'https://via.placeholder.com/300x450?text=Sem+Imagem'}" alt="${titulo}" />
+      <div class="filme-info">
+        <h3>${titulo} ${ano ? '('+ano+')' : ''}</h3>
+        <p>${sinopse ? sinopse : 'Sem descrição disponível.'}</p>
+      </div>
+      <div class="filme-actions">
+        ${isAdmin ? `<button class="btn-visto">Marcar Visto</button><button class="btn-excluir" data-titulo="${titulo}">Excluir</button>` : `<button class="btn-visto">Marcar Visto</button>`}
+      </div>
+    `;
+
+    // abrir detalhes ao clicar na imagem
+    card.querySelector('img').addEventListener('click', () => {
+      localStorage.setItem('detalhesFilme', JSON.stringify(item));
+      window.location.href = 'detalhes.html';
+    });
+
+    // botão excluir
+    if(isAdmin){
+      card.querySelector('.btn-excluir').addEventListener('click', async e => {
+        e.stopPropagation();
+        if(!confirm(`Excluir o filme "${titulo}"?`)) return;
+        await excluirFilme(titulo);
+        carregarFilmes();
+      });
+    }
+
+    // botão marcar visto
+    card.querySelector('.btn-visto').addEventListener('click', e => {
+      e.stopPropagation();
+      marcarComoVisto(titulo);
+      alert(`Filme "${titulo}" marcado como visto!`);
+    });
+
+    listaFilmes.appendChild(card);
+  }
+}
+
+async function buscarFilmesOMDb(titulo, ano) {
+  let url = `https://www.omdbapi.com/?apikey=${apiOMDbKey}&s=${encodeURIComponent(titulo)}`;
+  if(ano) url += `&y=${ano}`;
+  const res = await fetch(url);
+  if(!res.ok) return null;
+  const dados = await res.json();
+  if(dados.Response === "False") return null;
+  return dados.Search;
+}
+
+async function buscarDetalhesOMDb(imdbID){
+  const res = await fetch(`https://www.omdbapi.com/?apikey=${apiOMDbKey}&i=${imdbID}&plot=full`);
+  if(!res.ok) return null;
+  const data = await res.json();
+  if(data.Response === "False") return null;
+  return data;
+}
+
+async function adicionarFilmeDetalhado(info) {
+  const novoFilme = {
+    Filmes: info.Title,
+    Ano: info.Year,
+    Sinopse: info.Plot,
+    Poster: info.Poster !== 'N/A' ? info.Poster : '',
+    imdbID: info.imdbID
+  };
+  const res = await fetch(apiSheet, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({data: [novoFilme]})
+  });
+  return res.ok;
+}
+
+async function excluirFilme(titulo) {
+  // sheetdb não suporta delete por campo, usa filtro na URL:
+  const res = await fetch(`${apiSheet}/Filmes/${encodeURIComponent(titulo)}`, { method: 'DELETE' });
