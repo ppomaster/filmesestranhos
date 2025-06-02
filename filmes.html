@@ -1,120 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Filmes Estranhos</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filmes Estranhos</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<header>
-  <h1>Filmes Estranhos</h1>
-  <button onclick="logout()">Sair</button>
-</header>
-
-<main>
-  <div id="add-area" class="add-form">
-    <input type="text" id="titulo" placeholder="Título do Filme" />
-    <input type="text" id="ano" placeholder="Ano (opcional)" />
-    <button onclick="adicionarFilme()">Adicionar Filme</button>
+  <div class="header">
+    <h1>Filmes Estranhos</h1>
+    <button onclick="logout()">Sair</button>
   </div>
 
-  <div id="filmes" class="filmes-grid"></div>
-</main>
+  <div class="container">
+    <div class="add-section">
+      <input type="text" id="titulo" placeholder="Digite o nome do filme">
+      <button onclick="adicionarFilme()">Adicionar Filme</button>
+    </div>
 
-<script>
-const apiSheet = 'https://sheetdb.io/api/v1/dlats2maboyum';
-const apiOMDb = 'https://www.omdbapi.com/?apikey=6cbfb854';
+    <div id="filmes"></div>
+  </div>
 
-const usuarioLogado = localStorage.getItem('usuarioLogado');
-const admin = usuarioLogado === 'ppomaster';
-
-if (!usuarioLogado) window.location.href = 'login.html';
-
-if (!admin) document.getElementById('add-area').style.display = 'none';
-
-async function carregarFilmes() {
-  const res = await fetch(apiSheet);
-  const dados = await res.json();
-  const container = document.getElementById('filmes');
-  container.innerHTML = '';
-
-  dados.forEach(filme => {
-    const card = document.createElement('div');
-    card.className = 'filme';
-
-    card.innerHTML = `
-      <img src="${filme.Poster}" alt="${filme.Titulo}" onclick="abrirDetalhes('${filme.Titulo}')" />
-      <h3>${filme.Titulo} (${filme.Ano})</h3>
-      <p>${filme.Sinopse}</p>
-      ${admin ? `<button onclick="excluirFilme('${filme.Titulo}')">Excluir</button>` : ''}
-    `;
-    container.appendChild(card);
-  });
-}
-
-async function adicionarFilme() {
-  const titulo = document.getElementById('titulo').value.trim();
-  const ano = document.getElementById('ano').value.trim();
-
-  if (!titulo) {
-    alert('Digite o título do filme');
-    return;
-  }
-
-  try {
-    const busca = await fetch(`${apiOMDb}&t=${encodeURIComponent(titulo)}${ano ? `&y=${ano}` : ''}`);
-    const dados = await busca.json();
-
-    if (dados.Response === 'False') {
-      alert('Filme não encontrado na OMDb');
-      return;
+  <script>
+    const usuarioLogado = localStorage.getItem('usuarioLogado');
+    if (!usuarioLogado) {
+      window.location.href = 'login.html';
     }
 
-    const filme = {
-      Titulo: dados.Title,
-      Ano: dados.Year,
-      Poster: dados.Poster !== 'N/A' ? dados.Poster : 'sem-poster.jpg',
-      Sinopse: dados.Plot !== 'N/A' ? dados.Plot : 'Sinopse não disponível'
-    };
+    const API_URL = 'https://sheetdb.io/api/v1/dlats2maboyum?sheet=filmes';
 
-    await fetch(apiSheet, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: filme })
-    });
+    async function carregarFilmes() {
+      const response = await fetch(API_URL);
+      const filmes = await response.json();
 
-    document.getElementById('titulo').value = '';
-    document.getElementById('ano').value = '';
+      const container = document.getElementById('filmes');
+      container.innerHTML = '';
+
+      filmes.forEach((filme, index) => {
+        const card = document.createElement('div');
+        card.className = 'filme-card';
+        card.innerHTML = `
+          <h3>${filme.titulo}</h3>
+          ${usuarioLogado === 'ppomaster' ? `<button onclick="excluirFilme('${filme.id}')">Excluir</button>` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function adicionarFilme() {
+      const titulo = document.getElementById('titulo').value.trim();
+      if (!titulo) {
+        alert('Digite o nome do filme');
+        return;
+      }
+
+      const dados = {
+        data: [{ titulo }]
+      };
+
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+
+      if (response.ok) {
+        document.getElementById('titulo').value = '';
+        carregarFilmes();
+      } else {
+        alert('Erro ao adicionar filme');
+      }
+    }
+
+    async function excluirFilme(id) {
+      if (!confirm('Deseja excluir este filme?')) return;
+
+      await fetch(`${API_URL}/id/${id}`, { method: 'DELETE' });
+      carregarFilmes();
+    }
+
+    function logout() {
+      localStorage.removeItem('usuarioLogado');
+      window.location.href = 'login.html';
+    }
+
     carregarFilmes();
-
-  } catch (error) {
-    alert('Erro ao adicionar filme');
-    console.error(error);
-  }
-}
-
-async function excluirFilme(titulo) {
-  if (!confirm(`Excluir o filme "${titulo}"?`)) return;
-
-  await fetch(`${apiSheet}/Titulo/${encodeURIComponent(titulo)}`, {
-    method: 'DELETE'
-  });
-  carregarFilmes();
-}
-
-function abrirDetalhes(titulo) {
-  window.location.href = `detalhes.html?t=${encodeURIComponent(titulo)}`;
-}
-
-function logout() {
-  localStorage.removeItem('usuarioLogado');
-  window.location.href = 'login.html';
-}
-
-carregarFilmes();
-</script>
-
+  </script>
 </body>
 </html>
