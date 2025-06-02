@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Filmes Estranhos</title>
+  <title>Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,11 +17,16 @@
   </div>
 
   <script>
-    const API = "https://sheetdb.io/api/v1/dlats2maboyum?sheet=página2";
+    const API = "https://sheetdb.io/api/v1/dlats2maboyum?sheet=usuarios";
 
     function login() {
       const usuario = document.getElementById('usuario').value.trim();
       const senha = document.getElementById('senha').value.trim();
+
+      if (!usuario || !senha) {
+        alert("Preencha usuário e senha.");
+        return;
+      }
 
       fetch(API)
         .then(res => res.json())
@@ -32,9 +37,10 @@
             localStorage.setItem('admin', usuario === 'ppomaster' ? 'true' : 'false');
             window.location.href = "filmes.html";
           } else {
-            alert("Usuário ou senha inválidos!");
+            alert("Usuário ou senha inválidos.");
           }
-        });
+        })
+        .catch(() => alert("Erro ao acessar a API."));
     }
   </script>
 </body>
