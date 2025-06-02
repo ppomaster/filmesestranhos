@@ -1,82 +1,251 @@
-<script>
-    const apiUrl = 'https://sheetdb.io/api/v1/dlats2maboyum';
-    const listaFilmes = document.getElementById('lista-filmes');
-    const form = document.getElementById('form-filme');
-    const inputFilme = document.getElementById('input-filme');
-    let filmesExistentes = [];
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Filmes Estranhos - Filmes</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #1f1f1f;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            color: #00ffaa;
+        }
+        nav {
+            background-color: #2a2a2a;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        nav a:hover {
+            color: #00ffaa;
+        }
+        main {
+            padding: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        h2 {
+            color: #00ffaa;
+        }
+        form {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        form input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: none;
+        }
+        form button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #00ffaa;
+            color: #121212;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        form button:hover {
+            background-color: #00cc88;
+        }
+        .filmes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .filme {
+            background-color: #1f1f1f;
+            border-radius: 10px;
+            padding: 15px;
+            transition: transform 0.3s;
+        }
+        .filme:hover {
+            transform: scale(1.03);
+        }
+        .filme img {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .filme h3 {
+            margin: 10px 0 5px;
+            color: #00ffaa;
+        }
+        .filme p {
+            font-size: 14px;
+            color: #ccc;
+        }
+        .filme button {
+            margin-top: 10px;
+            background-color: crimson;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
+        .filme button:hover {
+            background-color: red;
+        }
+        footer {
+            background-color: #1f1f1f;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
 
-    async function carregarFilmes() {
-        const res = await fetch(apiUrl);
-        const dados = await res.json();
+    <header>
+        <h1>🎥 Filmes Estranhos</h1>
+    </header>
 
-        console.log(dados); // Veja no console como os dados estão vindo
+    <nav>
+        <a href="index.html">Início</a>
+        <a href="filmes.html">Filmes</a>
+        <a href="#">Sobre</a>
+    </nav>
 
-        filmesExistentes = dados
-            .filter(item => item["Filmes Estranhos"])
-            .map(item => item["Filmes Estranhos"].toLowerCase());
+    <main>
+        <h2>🎬 Lista de Filmes Estranhos</h2>
 
-        listaFilmes.innerHTML = '';
+        <form id="form-filme">
+            <input type="text" id="input-filme" placeholder="Nome do filme" required />
+            <input type="text" id="input-ano" placeholder="Ano (opcional)" />
+            <button type="submit">Adicionar Filme</button>
+        </form>
 
-        dados.forEach(item => {
-            const nome = item["Filmes Estranhos"];
-            const divFilme = document.createElement('div');
-            divFilme.classList.add('filme');
+        <div class="filmes" id="lista-filmes"></div>
+    </main>
 
-            divFilme.innerHTML = `
-                <h3>${nome}</h3>
-                <button onclick="apagarFilme('${nome}')">🗑️ Apagar</button>
-                <p>Descrição ainda não cadastrada.</p>
-            `;
+    <footer>
+        &copy; 2025 Filmes Estranhos. Todos os direitos reservados.
+    </footer>
 
-            listaFilmes.appendChild(divFilme);
+    <script>
+        const apiSheet = 'https://sheetdb.io/api/v1/dlats2maboyum';
+        const apiOmdb = 'https://www.omdbapi.com/?apikey=6cbfb854';
+
+        const listaFilmes = document.getElementById('lista-filmes');
+        const form = document.getElementById('form-filme');
+        const inputFilme = document.getElementById('input-filme');
+        const inputAno = document.getElementById('input-ano');
+
+        let filmesExistentes = [];
+
+        // Carregar filmes da planilha
+        async function carregarFilmes() {
+            const res = await fetch(apiSheet);
+            const dados = await res.json();
+
+            filmesExistentes = dados.map(item => item.Filme.toLowerCase());
+
+            listaFilmes.innerHTML = '';
+
+            dados.forEach(item => {
+                const div = document.createElement('div');
+                div.classList.add('filme');
+
+                div.innerHTML = `
+                    <img src="${item.Poster || 'https://via.placeholder.com/300x450?text=Sem+Imagem'}" alt="${item.Filme}">
+                    <h3>${item.Filme} ${item.Ano ? `(${item.Ano})` : ''}</h3>
+                    <p>${item.Sinopse || 'Sem sinopse cadastrada.'}</p>
+                    <button onclick="apagarFilme('${item.Filme}')">🗑️ Apagar</button>
+                `;
+
+                listaFilmes.appendChild(div);
+            });
+        }
+
+        // Adicionar filme
+        async function adicionarFilme(nome, ano) {
+            if (filmesExistentes.includes(nome.toLowerCase())) {
+                alert('Esse filme já está na lista!');
+                return;
+            }
+
+            const busca = await fetch(`${apiOmdb}&t=${encodeURIComponent(nome)}${ano ? `&y=${ano}` : ''}`);
+            const dados = await busca.json();
+
+            if (dados.Response === 'False') {
+                alert('Filme não encontrado na OMDb!');
+                return;
+            }
+
+            const body = {
+                data: [{
+                    Filme: dados.Title || nome,
+                    Ano: dados.Year || ano || '',
+                    Poster: dados.Poster || '',
+                    Sinopse: dados.Plot || ''
+                }]
+            };
+
+            const res = await fetch(apiSheet, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (res.ok) {
+                alert('Filme adicionado com sucesso!');
+                inputFilme.value = '';
+                inputAno.value = '';
+                carregarFilmes();
+            } else {
+                alert('Erro ao adicionar filme.');
+            }
+        }
+
+        // Apagar filme
+        async function apagarFilme(nome) {
+            const res = await fetch(`${apiSheet}/Filme/${encodeURIComponent(nome)}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                alert('Filme apagado com sucesso!');
+                carregarFilmes();
+            } else {
+                alert('Erro ao apagar filme.');
+            }
+        }
+
+        // Eventos
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const filme = inputFilme.value.trim();
+            const ano = inputAno.value.trim();
+            if (filme) {
+                adicionarFilme(filme, ano);
+            }
         });
-    }
 
-    async function adicionarFilme(nome) {
-        if (filmesExistentes.includes(nome.toLowerCase())) {
-            alert('Esse filme já está na lista!');
-            return;
-        }
+        // Carregar ao abrir
+        carregarFilmes();
+    </script>
 
-        const bodyData = {
-            data: [{ "Filmes Estranhos": nome }]
-        };
-
-        const res = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bodyData)
-        });
-
-        if (res.ok) {
-            alert('Filme adicionado com sucesso!');
-            inputFilme.value = '';
-            carregarFilmes();
-        } else {
-            alert('Erro ao adicionar filme. Tente novamente.');
-        }
-    }
-
-    async function apagarFilme(nome) {
-        const res = await fetch(`${apiUrl}/Filmes Estranhos/${nome}`, {
-            method: 'DELETE'
-        });
-
-        if (res.ok) {
-            alert('Filme apagado com sucesso!');
-            carregarFilmes();
-        } else {
-            alert('Erro ao apagar filme.');
-        }
-    }
-
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        const filme = inputFilme.value.trim();
-        if (filme) {
-            adicionarFilme(filme);
-        }
-    });
-
-    carregarFilmes();
-</script>
+</body>
+</html>
