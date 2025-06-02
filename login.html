@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Filmes Estranhos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header><h1>Filmes Estranhos - Login</h1></header>
+    <main>
+        <h2>Entrar</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Usuário" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <button onclick="recuperarSenha()">Esqueci a senha</button>
+        <p id="mensagem"></p>
+    </main>
+    <script>
+        const API = "https://sheetdb.io/api/v1/dlats2maboyum/search?sheet=usuarios";
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+
+            const res = await fetch(`${API}&username=${user}`);
+            const data = await res.json();
+
+            if (data.length > 0 && data[0].password === pass) {
+                localStorage.setItem('logado', 'sim');
+                window.location.href = 'filmes.html';
+            } else {
+                document.getElementById('mensagem').innerText = 'Usuário ou senha inválidos';
+            }
+        });
+
+        function recuperarSenha() {
+            const email = prompt("Digite seu email:");
+            if (!email) return;
+
+            fetch(`https://sheetdb.io/api/v1/dlats2maboyum/search?sheet=usuarios&email=${email}`)
+                .then(r => r.json())
+                .then(d => {
+                    if (d.length > 0) {
+                        alert(`Sua senha é: ${d[0].password}`);
+                    } else {
+                        alert("Email não encontrado.");
+                    }
+                });
+        }
+    </script>
+</body>
+</html>
