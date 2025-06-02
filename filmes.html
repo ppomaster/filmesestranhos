@@ -226,7 +226,6 @@ async function carregarFilmes(){
   for(const item of dados){
     if(!item.Filmes) continue;
 
-    const imdbID = item.imdbID || '';
     const titulo = item.Filmes;
     const ano = item.Ano || '';
     const sinopse = item.Sinopse || '';
@@ -246,13 +245,11 @@ async function carregarFilmes(){
       </div>
     `;
 
-    // abrir detalhes ao clicar na imagem
     card.querySelector('img').addEventListener('click', () => {
       localStorage.setItem('detalhesFilme', JSON.stringify(item));
       window.location.href = 'detalhes.html';
     });
 
-    // botão excluir
     if(isAdmin){
       card.querySelector('.btn-excluir').addEventListener('click', async e => {
         e.stopPropagation();
@@ -262,7 +259,6 @@ async function carregarFilmes(){
       });
     }
 
-    // botão marcar visto
     card.querySelector('.btn-visto').addEventListener('click', e => {
       e.stopPropagation();
       marcarComoVisto(titulo);
@@ -308,5 +304,95 @@ async function adicionarFilmeDetalhado(info) {
 }
 
 async function excluirFilme(titulo) {
-  // sheetdb não suporta delete por campo, usa filtro na URL:
+  // Delete via SheetDB usando filtro por Filmes
   const res = await fetch(`${apiSheet}/Filmes/${encodeURIComponent(titulo)}`, { method: 'DELETE' });
+  if (!res.ok) alert('Erro ao excluir o filme');
+  else alert(`Filme "${titulo}" excluído com sucesso!`);
+}
+
+function marcarComoVisto(titulo) {
+  let vistos = JSON.parse(localStorage.getItem('filmesVistos') || '[]');
+  if (!vistos.includes(titulo)) {
+    vistos.push(titulo);
+    localStorage.setItem('filmesVistos', JSON.stringify(vistos));
+  }
+}
+
+function carregarJaVistos() {
+  const vistos = JSON.parse(localStorage.getItem('filmesVistos') || '[]');
+  listaVistos.innerHTML = '';
+  if (vistos.length === 0) {
+    listaVistos.innerHTML = '<p>Nenhum filme marcado como visto.</p>';
+    return;
+  }
+  vistos.forEach(titulo => {
+    const card = document.createElement('div');
+    card.className = 'filme-card';
+    card.innerHTML = `
+      <div class="filme-info">
+        <h3>${titulo}</h3>
+      </div>
+    `;
+    listaVistos.appendChild(card);
+  });
+}
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const titulo = inputFilme.value.trim();
+  const ano = inputAno.value.trim();
+  if (!titulo) return alert('Informe o nome do filme.');
+
+  // Busca na OMDb
+  const resultados = await buscarFilmesOMDb(titulo, ano);
+  if (!resultados || resultados.length === 0) {
+    alert('Nenhum filme encontrado na OMDb.');
+    return;
+  }
+  if (resultados.length === 1) {
+    const detalhe = await buscarDetalhesOMDb(resultados[0].imdbID);
+    if (!detalhe) {
+      alert('Não foi possível obter detalhes do filme.');
+      return;
+    }
+    const sucesso = await adicionarFilmeDetalhado(detalhe);
+    if (sucesso) {
+      alert(`Filme "${detalhe.Title}" adicionado com sucesso!`);
+      inputFilme.value = '';
+      inputAno.value = '';
+      carregarFilmes();
+    } else {
+      alert('Erro ao adicionar filme.');
+    }
+  } else {
+    // Se mais de 1 resultado, mostrar para escolher (simplificação)
+    let escolha = prompt(`Foram encontrados vários filmes. Escolha um número de 1 a ${resultados.length}:\n` +
+      resultados.map((f, i) => `${i+1}: ${f.Title} (${f.Year})`).join('\n'));
+    escolha = parseInt(escolha);
+    if (isNaN(escolha) || escolha < 1 || escolha > resultados.length) {
+      alert('Escolha inválida.');
+      return;
+    }
+    const detalhe = await buscarDetalhesOMDb(resultados[escolha-1].imdbID);
+    if (!detalhe) {
+      alert('Não foi possível obter detalhes do filme.');
+      return;
+    }
+    const sucesso = await adicionarFilmeDetalhado(detalhe);
+    if (sucesso) {
+      alert(`Filme "${detalhe.Title}" adicionado com sucesso!`);
+      inputFilme.value = '';
+      inputAno.value = '';
+      carregarFilmes();
+    } else {
+      alert('Erro ao adicionar filme.');
+    }
+  }
+});
+
+carregarFilmes();
+</script>
+
+</body>
+</html>
+
