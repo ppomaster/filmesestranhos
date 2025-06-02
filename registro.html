@@ -1,45 +1,48 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro</title>
+  <title>Cadastro - Filmes Estranhos</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="login-container">
-    <h1>Criar Conta</h1>
+  <div class="container">
+    <h1>Cadastro</h1>
     <input type="text" id="usuario" placeholder="Usuário">
     <input type="password" id="senha" placeholder="Senha">
     <button onclick="cadastrar()">Cadastrar</button>
-    <a href="login.html">Voltar</a>
+    <p>Já tem conta? <a href="login.html">Fazer login</a></p>
   </div>
 
   <script>
-    const API = "https://sheetdb.io/api/v1/dlats2maboyum?sheet=usuarios";
-
-    function cadastrar() {
+    async function cadastrar() {
       const usuario = document.getElementById('usuario').value.trim();
       const senha = document.getElementById('senha').value.trim();
 
       if (!usuario || !senha) {
-        alert("Preencha todos os campos.");
+        alert('Preencha todos os campos!');
         return;
       }
 
-      fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: [{ usuario, senha }] })
-      })
-      .then(res => {
-        if (res.ok) {
-          alert("Cadastro realizado!");
-          window.location.href = "login.html";
-        } else {
-          alert("Erro ao cadastrar.");
-        }
+      const dados = {
+        data: [
+          { usuario: usuario, senha: senha }
+        ]
+      };
+
+      const response = await fetch('https://sheetdb.io/api/v1/dlats2maboyum?sheet=usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
       });
+
+      if (response.ok) {
+        alert('Usuário cadastrado com sucesso!');
+        window.location.href = 'login.html';
+      } else {
+        alert('Erro ao cadastrar.');
+      }
     }
   </script>
 </body>
