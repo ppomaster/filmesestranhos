@@ -1,51 +1,29 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Detalhes do Filme</title>
-<style>
-  body { background: #121212; color: #f0f0f0; font-family: sans-serif; margin: 0; padding: 20px; }
-  .content { max-width: 600px; margin: auto; text-align: center; }
-  img { width: 100%; border-radius: 10px; }
-  h1 { color: #00ffaa; }
-  p { margin: 10px 0; line-height: 1.5; }
-  .back { color: #00ffaa; display: block; margin-bottom: 20px; text-decoration: none; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Filme</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<a class="back" href="filmes.html">← Voltar</a>
+    <header>
+        <h1>🎥 Filmes Estranhos</h1>
+    </header>
 
-<div class="content" id="conteudo"></div>
+    <nav>
+        <a href="index.html">Início</a>
+        <a href="filmes.html">Filmes</a>
+        <a href="login.html">Login</a>
+    </nav>
 
-<script>
-const params = new URLSearchParams(window.location.search);
-const id = params.get('id');
-const apiSheet = 'https://sheetdb.io/api/v1/dlats2maboyum';
+    <main id="detalhes-filme"></main>
 
-async function carregarDetalhes() {
-  const res = await fetch(apiSheet);
-  const data = await res.json();
-  const filme = data.find(f => f.ID === id);
-  const div = document.getElementById('conteudo');
+    <footer>
+        &copy; 2025 Filmes Estranhos. Todos os direitos reservados.
+    </footer>
 
-  if (filme) {
-    div.innerHTML = `
-      <img src="${filme.Poster}" alt="${filme.Titulo}">
-      <h1>${filme.Titulo} (${filme.Ano})</h1>
-      <p><strong>Gênero:</strong> ${filme.Genero}</p>
-      <p><strong>Duração:</strong> ${filme.Duracao}</p>
-      <p><strong>Avaliação:</strong> ⭐ ${filme.Avaliacao}</p>
-      <p><strong>Sinopse:</strong> ${filme.Sinopse}</p>
-    `;
-  } else {
-    div.innerHTML = '<p>Filme não encontrado.</p>';
-  }
-}
-
-carregarDetalhes();
-</script>
-
+    <script src="detalhes.js"></script>
 </body>
 </html>
