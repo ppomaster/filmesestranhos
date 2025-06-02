@@ -1,285 +1,123 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Filmes Estranhos - Filmes</title>
-    <style>
-        body {
-            background-color: #121212;
-            color: #f0f0f0;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #1f1f1f;
-            padding: 20px;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-            color: #00ffaa;
-        }
-        nav {
-            background-color: #2a2a2a;
-            padding: 10px;
-            text-align: center;
-        }
-        nav a {
-            color: #ffffff;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: bold;
-        }
-        nav a:hover {
-            color: #00ffaa;
-        }
-        main {
-            padding: 30px;
-            max-width: 1000px;
-            margin: auto;
-        }
-        h2 {
-            color: #00ffaa;
-        }
-        form#form-filme {
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        form#form-filme input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 6px;
-            border: none;
-        }
-        form#form-filme button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 6px;
-            background-color: #00ffaa;
-            color: #121212;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        form#form-filme button:hover {
-            background-color: #00cc88;
-        }
-        .filmes {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .filme {
-            background-color: #1f1f1f;
-            border-radius: 10px;
-            padding: 15px;
-            transition: transform 0.3s;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        .filme:hover {
-            transform: scale(1.03);
-        }
-        .filme img {
-            width: 100%;
-            border-radius: 8px;
-            object-fit: cover;
-            max-height: 350px;
-        }
-        .filme h3 {
-            margin: 10px 0 5px;
-            color: #00ffaa;
-        }
-        .filme p {
-            font-size: 14px;
-            color: #ccc;
-            flex-grow: 1;
-        }
-        .filme small {
-            color: #666;
-            margin-top: 5px;
-            display: block;
-        }
-        .btn-excluir {
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 8px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.3s;
-        }
-        .btn-excluir:hover {
-            background-color: #cc0000;
-        }
-        footer {
-            background-color: #1f1f1f;
-            text-align: center;
-            padding: 15px;
-            font-size: 14px;
-            color: #888;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Filmes Estranhos - Filmes</title>
+<style>
+  body {background:#121212;color:#f0f0f0;font-family:Arial,sans-serif;margin:0;padding:0;}
+  header {background:#1f1f1f;padding:20px;text-align:center;}
+  header h1 {margin:0;color:#0f9;}
+  nav {background:#2a2a2a;padding:10px;text-align:center;}
+  nav a {color:#fff;text-decoration:none;margin:0 15px;font-weight:bold;}
+  nav a:hover {color:#0f9;}
+  main {padding:30px;max-width:1000px;margin:auto;}
+  h2 {color:#0f9;}
+  form#form-filme {margin-bottom:30px;display:flex;gap:10px;}
+  form#form-filme input[type=text] {flex:1;padding:10px;font-size:16px;border-radius:6px;border:none;}
+  form#form-filme button {padding:10px 20px;font-size:16px;border:none;border-radius:6px;background:#0f9;color:#121212;cursor:pointer;transition:.3s;}
+  form#form-filme button:hover {background:#0c7;}
+  .filmes {display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
+  .filme {background:#1f1f1f;border-radius:10px;padding:15px;display:flex;flex-direction:column;transition:.3s; height:100%;}
+  .filme:hover {transform:scale(1.03);}
+  .filme img {width:100%;border-radius:8px;object-fit:cover;max-height:350px;}
+  .filme h3 {margin:10px 0 5px;color:#0f9;}
+  .filme p {font-size:14px;color:#ccc;flex-grow:1;}
+  .filme small {color:#666;margin-top:5px;display:block;}
+  .btn-excluir {background:#f44;color:#fff;border:none;border-radius:6px;padding:8px;cursor:pointer;margin-top:10px;transition:.3s;}
+  .btn-excluir:hover {background:#c00;}
+  footer {background:#1f1f1f;text-align:center;padding:15px;font-size:14px;color:#888;}
+</style>
 </head>
 <body>
-
-<header>
-    <h1>🎥 Filmes Estranhos</h1>
-</header>
-
+<header><h1>🎥 Filmes Estranhos</h1></header>
 <nav>
-    <a href="index.html">Início</a>
-    <a href="filmes.html">Filmes</a>
-    <a href="#">Sobre</a>
+  <a href="index.html">Início</a>
+  <a href="filmes.html">Filmes</a>
+  <a href="#">Sobre</a>
 </nav>
-
 <main>
-    <h2>🎬 Lista de Filmes Estranhos</h2>
-
-    <form id="form-filme">
-        <input type="text" id="input-filme" placeholder="Nome do filme" required />
-        <button type="submit">Adicionar Filme</button>
-    </form>
-
-    <div class="filmes" id="lista-filmes">
-        <!-- Filmes aparecerão aqui -->
-    </div>
+  <h2>🎬 Lista de Filmes Estranhos</h2>
+  <form id="form-filme">
+    <input type="text" id="input-filme" placeholder="Nome do filme" required />
+    <button type="submit">Adicionar Filme</button>
+  </form>
+  <div class="filmes" id="lista-filmes"></div>
 </main>
-
-<footer>
-    &copy; 2025 Filmes Estranhos. Todos os direitos reservados.
-</footer>
-
+<footer>&copy; 2025 Filmes Estranhos. Todos os direitos reservados.</footer>
 <script>
-    // URLs e chaves
-    const apiSheetDB = 'https://sheetdb.io/api/v1/dlats2maboyum';
-    const apiTMDbKey = '9aa24d4f0459c164a27019c4c4504ff3'; // sua chave TMDb
-    const apiTMDbBase = 'https://api.themoviedb.org/3';
+const apiSheetDB = 'https://sheetdb.io/api/v1/dlats2maboyum';
+const apiTMDbKey = '9aa24d4f0459c164a27019c4c4504ff3';
+const apiTMDbBase = 'https://api.themoviedb.org/3';
+const listaFilmes = document.getElementById('lista-filmes');
+const form = document.getElementById('form-filme');
+const inputFilme = document.getElementById('input-filme');
+let filmesExistentes = [];
 
-    const listaFilmes = document.getElementById('lista-filmes');
-    const form = document.getElementById('form-filme');
-    const inputFilme = document.getElementById('input-filme');
+async function carregarFilmes(){
+  try{
+    const res = await fetch(apiSheetDB);
+    const dados = await res.json();
+    filmesExistentes = dados.map(i=>i.Titulo.toLowerCase());
+    listaFilmes.innerHTML = '';
+    dados.forEach(item=>{
+      const poster = item.Poster || 'https://via.placeholder.com/300x450?text=Sem+Imagem';
+      const sinopse = item.Sinopse || 'Descrição não disponível.';
+      const lancamento = item.Lancamento || 'Desconhecido';
+      const div = document.createElement('div');
+      div.classList.add('filme');
+      div.innerHTML = `<img src="${poster}" alt="${item.Titulo}"><h3>${item.Titulo}</h3><p>${sinopse}</p><small>Lançamento: ${lancamento}</small><button class="btn-excluir" data-titulo="${encodeURIComponent(item.Titulo)}">Excluir</button>`;
+      listaFilmes.appendChild(div);
+    });
+    document.querySelectorAll('.btn-excluir').forEach(btn=>btn.addEventListener('click', excluirFilme));
+  }catch(e){alert('Erro ao carregar filmes.')}
+}
 
-    let filmesExistentes = [];
+async function buscarFilmeTMDB(nome){
+  try{
+    const url = `${apiTMDbBase}/search/movie?api_key=${apiTMDbKey}&language=pt-BR&query=${encodeURIComponent(nome)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.results && data.results.length>0){
+      const f=data.results[0];
+      return {titulo:f.title, sinopse:f.overview||'Sem descrição.', poster:f.poster_path?`https://image.tmdb.org/t/p/w500${f.poster_path}`:'', lancamento:f.release_date||'Desconhecido'};
+    }return null;
+  }catch{ return null;}
+}
 
-    // Função para carregar filmes da planilha e mostrar na tela
-    async function carregarFilmes() {
-        try {
-            const res = await fetch(apiSheetDB);
-            const dados = await res.json();
+async function adicionarFilmeSheetDB(filme){
+  try{
+    const body={data:[{Titulo:filme.titulo,Sinopse:filme.sinopse,Poster:filme.poster,Lancamento:filme.lancamento}]};
+    const res=await fetch(apiSheetDB,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    return res.ok;
+  }catch{return false;}
+}
 
-            filmesExistentes = dados.map(item => item.Titulo.toLowerCase());
-            listaFilmes.innerHTML = '';
+async function adicionarFilme(nome){
+  if(filmesExistentes.includes(nome.toLowerCase())){alert('Esse filme já está na lista!');return;}
+  const filme=await buscarFilmeTMDB(nome);
+  if(!filme){alert('Filme não encontrado na TMDb.');return;}
+  const ok=await adicionarFilmeSheetDB(filme);
+  if(ok){alert('Filme adicionado!');inputFilme.value='';carregarFilmes();}
+  else alert('Erro ao adicionar filme.');
+}
 
-            dados.forEach(item => {
-                const poster = item.Poster || 'https://via.placeholder.com/300x450?text=Sem+Imagem';
-                const sinopse = item.Sinopse || 'Descrição não disponível.';
-                const lancamento = item.Lancamento || 'Desconhecido';
+async function excluirFilme(e){
+  const titulo=decodeURIComponent(e.target.dataset.titulo);
+  if(!confirm(`Excluir o filme "${titulo}"?`)) return;
+  try{
+    const url=`${apiSheetDB}/Titulo/${encodeURIComponent(titulo)}`;
+    const res=await fetch(url,{method:'DELETE'});
+    if(res.ok){alert(`Filme "${titulo}" excluído!`); carregarFilmes();}
+    else alert('Erro ao excluir filme.');
+  }catch{alert('Erro ao excluir filme.');}
+}
 
-                const divFilme = document.createElement('div');
-                divFilme.classList.add('filme');
-
-                divFilme.innerHTML = `
-                    <img src="${poster}" alt="${item.Titulo}">
-                    <h3>${item.Titulo}</h3>
-                    <p>${sinopse}</p>
-                    <small>Lançamento: ${lancamento}</small>
-                    <button class="btn-excluir" data-titulo="${item.Titulo}">Excluir</button>
-                `;
-
-                listaFilmes.appendChild(divFilme);
-            });
-
-            // Adiciona evento para os botões de excluir
-            document.querySelectorAll('.btn-excluir').forEach(btn => {
-                btn.addEventListener('click', excluirFilme);
-            });
-
-        } catch (error) {
-            console.error('Erro ao carregar filmes:', error);
-            alert('Erro ao carregar filmes.');
-        }
-    }
-
-    // Função para buscar filme no TMDb
-    async function buscarFilmeTMDB(nome) {
-        try {
-            const url = `${apiTMDbBase}/search/movie?api_key=${apiTMDbKey}&language=pt-BR&query=${encodeURIComponent(nome)}`;
-            const res = await fetch(url);
-            const data = await res.json();
-
-            if (data.results && data.results.length > 0) {
-                const filme = data.results[0];
-                // Monta objeto com dados
-                return {
-                    titulo: filme.title,
-                    sinopse: filme.overview || 'Sem descrição disponível.',
-                    poster: filme.poster_path ? `https://image.tmdb.org/t/p/w500${filme.poster_path}` : '',
-                    lancamento: filme.release_date || 'Desconhecido'
-                };
-            } else {
-                return null; // não achou
-            }
-        } catch (error) {
-            console.error('Erro na busca TMDb:', error);
-            return null;
-        }
-    }
-
-    // Função para adicionar filme na planilha
-    async function adicionarFilmeSheetDB(filme) {
-        try {
-            const bodyData = {
-                data: [{
-                    Titulo: filme.titulo,
-                    Sinopse: filme.sinopse,
-                    Poster: filme.poster,
-                    Lancamento: filme.lancamento
-                }]
-            };
-
-            const res = await fetch(apiSheetDB, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bodyData)
-            });
-
-            return res.ok;
-        } catch (error) {
-            console.error('Erro ao adicionar filme na planilha:', error);
-            return false;
-        }
-    }
-
-    // Função para adicionar filme via formulário
-    async function adicionarFilme(nome) {
-        if (filmesExistentes.includes(nome.toLowerCase())) {
-            alert('Esse filme já está na lista!');
-            return;
-        }
-
-        const filme = await buscarFilmeTMDB(nome);
-        if (!filme) {
-            alert('Filme não encontrado na TMDb.');
-            return;
-        }
-
-        const sucesso = await adicionarFilmeSheetDB(filme);
-        if (sucesso) {
-            alert('Filme adicionado com sucesso!');
-            inputFilme.value = '';
-            carregarFilmes();
-        } else {
-            alert('Erro ao adicionar filme na planilha.');
-        }
-    }
-
-    // Função para excluir filme da planilha
+form.addEventListener('submit', e=>{
+  e.preventDefault();
+  adicionarFilme(inputFilme.value.trim());
+});
+carregarFilmes();
+</script>
+</body>
+</html>
