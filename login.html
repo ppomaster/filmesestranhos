@@ -1,51 +1,41 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Login - Filmes Estranhos</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Filmes Estranhos</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="login-container">
+    <h1>Filmes Estranhos</h1>
+    <input type="text" id="usuario" placeholder="Usuário">
+    <input type="password" id="senha" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+    <a href="registro.html">Criar conta</a>
+    <a href="recuperar.html">Esqueci minha senha</a>
+  </div>
 
-<div class="login-container">
-  <h1>Login</h1>
-  <input type="text" id="usuario" placeholder="Usuário">
-  <input type="password" id="senha" placeholder="Senha">
-  <button onclick="fazerLogin()">Entrar</button>
-  <a href="recuperar.html">Esqueceu a senha?</a>
-</div>
+  <script>
+    const API = "https://sheetdb.io/api/v1/dlats2maboyum?sheet=página2";
 
-<script>
-const apiSheet = 'https://sheetdb.io/api/v1/dlats2maboyum?sheet=Página2';
+    function login() {
+      const usuario = document.getElementById('usuario').value.trim();
+      const senha = document.getElementById('senha').value.trim();
 
-async function fazerLogin() {
-  const usuario = document.getElementById('usuario').value.trim();
-  const senha = document.getElementById('senha').value.trim();
-
-  if (!usuario || !senha) {
-    alert('Preencha todos os campos');
-    return;
-  }
-
-  try {
-    const res = await fetch(apiSheet);
-    const dados = await res.json();
-
-    const user = dados.find(u => u.Usuario === usuario && u.Senha === senha);
-
-    if (user) {
-      localStorage.setItem('usuarioLogado', usuario);
-      window.location.href = 'filmes.html';
-    } else {
-      alert('Usuário ou senha incorretos');
+      fetch(API)
+        .then(res => res.json())
+        .then(data => {
+          const user = data.find(u => u.usuario === usuario && u.senha === senha);
+          if (user) {
+            localStorage.setItem('usuario', usuario);
+            localStorage.setItem('admin', usuario === 'ppomaster' ? 'true' : 'false');
+            window.location.href = "filmes.html";
+          } else {
+            alert("Usuário ou senha inválidos!");
+          }
+        });
     }
-  } catch (error) {
-    alert('Erro ao fazer login');
-    console.error(error);
-  }
-}
-</script>
-
+  </script>
 </body>
 </html>
