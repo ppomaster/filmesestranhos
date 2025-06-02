@@ -2,54 +2,38 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Filmes Estranhos</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header><h1>Filmes Estranhos - Login</h1></header>
+
+    <header>
+        <h1>🎥 Filmes Estranhos</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Início</a>
+        <a href="filmes.html">Filmes</a>
+        <a href="login.html">Login</a>
+    </nav>
+
     <main>
-        <h2>Entrar</h2>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Usuário" required>
-            <input type="password" id="password" placeholder="Senha" required>
+        <h2>🔑 Login</h2>
+
+        <form id="login-form">
+            <input type="text" id="usuario" placeholder="Usuário" required>
+            <input type="password" id="senha" placeholder="Senha" required>
             <button type="submit">Entrar</button>
         </form>
-        <button onclick="recuperarSenha()">Esqueci a senha</button>
-        <p id="mensagem"></p>
+
+        <p><a href="recuperar.html">Esqueci minha senha</a></p>
     </main>
-    <script>
-        const API = "https://sheetdb.io/api/v1/dlats2maboyum/search?sheet=usuarios";
 
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value.trim();
+    <footer>
+        &copy; 2025 Filmes Estranhos. Todos os direitos reservados.
+    </footer>
 
-            const res = await fetch(`${API}&username=${user}`);
-            const data = await res.json();
-
-            if (data.length > 0 && data[0].password === pass) {
-                localStorage.setItem('logado', 'sim');
-                window.location.href = 'filmes.html';
-            } else {
-                document.getElementById('mensagem').innerText = 'Usuário ou senha inválidos';
-            }
-        });
-
-        function recuperarSenha() {
-            const email = prompt("Digite seu email:");
-            if (!email) return;
-
-            fetch(`https://sheetdb.io/api/v1/dlats2maboyum/search?sheet=usuarios&email=${email}`)
-                .then(r => r.json())
-                .then(d => {
-                    if (d.length > 0) {
-                        alert(`Sua senha é: ${d[0].password}`);
-                    } else {
-                        alert("Email não encontrado.");
-                    }
-                });
-        }
-    </script>
+    <script src="login.js"></script>
 </body>
 </html>
