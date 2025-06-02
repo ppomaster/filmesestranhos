@@ -1,39 +1,195 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Filmes Estranhos</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Filmes Estranhos - Login / Registro</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background-color: #1f1f1f;
+      padding: 30px;
+      border-radius: 10px;
+      width: 320px;
+    }
+    h2 {
+      color: #00ffaa;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 16px 0;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #00ffaa;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #121212;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #00cc88;
+    }
+    .toggle-link {
+      color: #00ffaa;
+      text-align: center;
+      margin-top: 15px;
+      cursor: pointer;
+      display: block;
+    }
+    .error, .success {
+      text-align: center;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .error {
+      color: #ff5555;
+    }
+    .success {
+      color: #55ff55;
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>🎥 Filmes Estranhos</h1>
-    </header>
+<div class="container" id="login-container">
+  <h2>Entrar</h2>
+  <div id="login-msg"></div>
+  <input type="text" id="login-usuario" placeholder="Usuário" />
+  <input type="password" id="login-senha" placeholder="Senha" />
+  <button id="btn-login">Login</button>
+  <span class="toggle-link" id="to-register">Não tem conta? Registre-se</span>
+</div>
 
-    <nav>
-        <a href="index.html">Início</a>
-        <a href="filmes.html">Filmes</a>
-        <a href="login.html">Login</a>
-    </nav>
+<div class="container" id="register-container" style="display:none;">
+  <h2>Registrar</h2>
+  <div id="register-msg"></div>
+  <input type="text" id="reg-usuario" placeholder="Usuário" />
+  <input type="password" id="reg-senha" placeholder="Senha" />
+  <button id="btn-register">Registrar</button>
+  <span class="toggle-link" id="to-login">Já tem conta? Faça login</span>
+</div>
 
-    <main>
-        <h2>🔑 Login</h2>
+<script>
+  const apiUrlLogins = 'https://sheetdb.io/api/v1/dlats2maboyum?sheet=Página2';
 
-        <form id="login-form">
-            <input type="text" id="usuario" placeholder="Usuário" required>
-            <input type="password" id="senha" placeholder="Senha" required>
-            <button type="submit">Entrar</button>
-        </form>
+  const loginContainer = document.getElementById('login-container');
+  const registerContainer = document.getElementById('register-container');
 
-        <p><a href="recuperar.html">Esqueci minha senha</a></p>
-    </main>
+  const loginMsg = document.getElementById('login-msg');
+  const registerMsg = document.getElementById('register-msg');
 
-    <footer>
-        &copy; 2025 Filmes Estranhos. Todos os direitos reservados.
-    </footer>
+  document.getElementById('to-register').onclick = () => {
+    loginContainer.style.display = 'none';
+    registerContainer.style.display = 'block';
+    clearMessages();
+  };
 
-    <script src="login.js"></script>
+  document.getElementById('to-login').onclick = () => {
+    registerContainer.style.display = 'none';
+    loginContainer.style.display = 'block';
+    clearMessages();
+  };
+
+  function clearMessages() {
+    loginMsg.textContent = '';
+    registerMsg.textContent = '';
+  }
+
+  async function buscarUsuarios() {
+    const res = await fetch(apiUrlLogins);
+    if (!res.ok) {
+      alert('Erro ao acessar os usuários');
+      return [];
+    }
+    return await res.json();
+  }
+
+  async function registrarUsuario(usuario, senha) {
+    const data = { Usuario: usuario, Senha: senha, Admin: "false" };
+    const res = await fetch(apiUrlLogins, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: [data] })
+    });
+    return res.ok;
+  }
+
+  document.getElementById('btn-register').onclick = async () => {
+    const usuario = document.getElementById('reg-usuario').value.trim();
+    const senha = document.getElementById('reg-senha').value.trim();
+
+    if (!usuario || !senha) {
+      registerMsg.textContent = 'Preencha todos os campos';
+      registerMsg.className = 'error';
+      return;
+    }
+
+    const usuarios = await buscarUsuarios();
+    if (usuarios.find(u => u.Usuario.toLowerCase() === usuario.toLowerCase())) {
+      registerMsg.textContent = 'Usuário já existe';
+      registerMsg.className = 'error';
+      return;
+    }
+
+    const sucesso = await registrarUsuario(usuario, senha);
+    if (sucesso) {
+      registerMsg.textContent = 'Registro feito com sucesso! Faça login.';
+      registerMsg.className = 'success';
+      document.getElementById('reg-usuario').value = '';
+      document.getElementById('reg-senha').value = '';
+    } else {
+      registerMsg.textContent = 'Erro ao registrar, tente novamente.';
+      registerMsg.className = 'error';
+    }
+  };
+
+  document.getElementById('btn-login').onclick = async () => {
+    const usuario = document.getElementById('login-usuario').value.trim();
+    const senha = document.getElementById('login-senha').value.trim();
+
+    if (!usuario || !senha) {
+      loginMsg.textContent = 'Preencha todos os campos';
+      loginMsg.className = 'error';
+      return;
+    }
+
+    const usuarios = await buscarUsuarios();
+    const user = usuarios.find(u => u.Usuario.toLowerCase() === usuario.toLowerCase() && u.Senha === senha);
+
+    if (user) {
+      loginMsg.textContent = 'Login efetuado com sucesso!';
+      loginMsg.className = 'success';
+      // Aqui você pode salvar o login no localStorage ou redirecionar
+      localStorage.setItem('usuario', usuario);
+      localStorage.setItem('admin', user.Admin);
+      setTimeout(() => {
+        window.location.href = 'filmes.html';
+      }, 1000);
+    } else {
+      loginMsg.textContent = 'Usuário ou senha incorretos';
+      loginMsg.className = 'error';
+    }
+  };
+</script>
+
 </body>
 </html>
