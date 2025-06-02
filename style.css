@@ -1,16 +1,13 @@
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
 body {
     background-color: #121212;
     color: #f0f0f0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    font-family: Arial, sans-serif;
 }
 
 header {
@@ -21,22 +18,19 @@ header {
 
 header h1 {
     color: #00ffaa;
-    font-size: 2rem;
 }
 
 nav {
     background-color: #2a2a2a;
     padding: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
+    text-align: center;
 }
 
 nav a {
-    color: #fff;
+    color: white;
     text-decoration: none;
+    margin: 0 15px;
     font-weight: bold;
-    transition: color 0.3s;
 }
 
 nav a:hover {
@@ -44,43 +38,38 @@ nav a:hover {
 }
 
 main {
-    flex: 1;
-    padding: 20px;
-    max-width: 1200px;
+    padding: 30px;
+    max-width: 1000px;
     margin: auto;
 }
 
 h2 {
     color: #00ffaa;
     margin-bottom: 20px;
-    text-align: center;
 }
 
 form {
+    margin-bottom: 20px;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     gap: 10px;
-    margin-bottom: 30px;
+    flex-wrap: wrap;
 }
 
-form input, form select {
+form input, form button {
     padding: 10px;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    flex: 1 1 250px;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+form input {
+    flex: 1;
 }
 
 form button {
-    padding: 10px 20px;
     background-color: #00ffaa;
     color: #121212;
-    border: none;
-    border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
 }
 
 form button:hover {
@@ -89,7 +78,7 @@ form button:hover {
 
 .filmes {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
 }
 
@@ -97,106 +86,28 @@ form button:hover {
     background-color: #1f1f1f;
     border-radius: 10px;
     padding: 10px;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s;
-}
-
-.filme:hover {
-    transform: scale(1.03);
+    text-align: center;
 }
 
 .filme img {
     width: 100%;
     border-radius: 8px;
-    object-fit: cover;
 }
 
 .filme h3 {
-    margin: 10px 0 5px;
     color: #00ffaa;
-    font-size: 1.1rem;
+    margin: 10px 0 5px;
 }
 
 .filme p {
-    font-size: 0.9rem;
     color: #ccc;
-    flex: 1;
-}
-
-.filme button {
-    background-color: #ff4444;
-    border: none;
-    color: white;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: background-color 0.3s;
-}
-
-.filme button:hover {
-    background-color: #cc0000;
+    font-size: 14px;
 }
 
 footer {
     background-color: #1f1f1f;
     text-align: center;
     padding: 15px;
-    font-size: 0.9rem;
+    font-size: 14px;
     color: #888;
-}
-
-/* Página de detalhes */
-.detalhes-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-}
-
-.detalhes-container img {
-    width: 300px;
-    max-width: 90%;
-    border-radius: 10px;
-}
-
-.detalhes-info {
-    max-width: 700px;
-    background-color: #1f1f1f;
-    padding: 20px;
-    border-radius: 10px;
-}
-
-.detalhes-info h2 {
-    margin-bottom: 10px;
-}
-
-.detalhes-info p {
-    margin-bottom: 10px;
-    line-height: 1.6;
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-    nav {
-        flex-direction: column;
-    }
-
-    .filme {
-        padding: 8px;
-    }
-
-    form {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    form input, form button {
-        flex: 1 1 100%;
-    }
-
-    .detalhes-info {
-        padding: 15px;
-    }
 }
