@@ -5,180 +5,193 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Filmes Estranhos - Filmes</title>
 <style>
-    body { background-color: #121212; color: #f0f0f0; font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header { background-color: #1f1f1f; padding: 20px; text-align: center; }
-    header h1 { margin: 0; color: #00ffaa; }
-    nav { background-color: #2a2a2a; padding: 10px; text-align: center; }
-    nav a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: bold; }
-    nav a:hover { color: #00ffaa; }
-    main { padding: 30px; max-width: 1000px; margin: auto; }
-    h2 { color: #00ffaa; }
-    form#form-filme { margin-bottom: 30px; display: flex; justify-content: center; gap: 10px; }
-    form#form-filme input[type="text"] { flex: 1; padding: 10px; font-size: 16px; border-radius: 6px; border: none; }
-    form#form-filme button { padding: 10px 20px; font-size: 16px; border: none; border-radius: 6px; background-color: #00ffaa; color: #121212; cursor: pointer; transition: background-color 0.3s; }
-    form#form-filme button:hover { background-color: #00cc88; }
-    .filmes { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-    .filme { background-color: #1f1f1f; border-radius: 10px; padding: 15px; position: relative; transition: transform 0.3s; }
-    .filme:hover { transform: scale(1.03); }
-    .filme img { width: 100%; border-radius: 8px; height: 350px; object-fit: cover; }
-    .filme h3 { margin: 10px 0 5px; color: #00ffaa; }
-    .filme p { font-size: 14px; color: #ccc; min-height: 60px; }
-    .btn-apagar { position: absolute; top: 10px; right: 10px; background-color: #ff4444; border: none; border-radius: 4px; color: white; padding: 5px 10px; cursor: pointer; font-weight: bold; transition: background-color 0.3s; }
-    .btn-apagar:hover { background-color: #cc0000; }
-    footer { background-color: #1f1f1f; text-align: center; padding: 15px; font-size: 14px; color: #888; }
+  body { background-color: #121212; color: #f0f0f0; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+  header { background-color: #1f1f1f; padding: 20px; text-align: center; }
+  header h1 { margin: 0; color: #00ffaa; }
+  nav { background-color: #2a2a2a; padding: 10px; text-align: center; }
+  nav a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: bold; }
+  nav a:hover { color: #00ffaa; }
+  main { padding: 30px; max-width: 1000px; margin: auto; }
+  h2 { color: #00ffaa; }
+  form#form-filme { margin-bottom: 30px; display: flex; justify-content: center; gap: 10px; }
+  form#form-filme input[type="text"] { flex: 1; padding: 10px; font-size: 16px; border-radius: 6px; border: none; }
+  form#form-filme button { padding: 10px 20px; font-size: 16px; border: none; border-radius: 6px; background-color: #00ffaa; color: #121212; cursor: pointer; transition: background-color 0.3s; }
+  form#form-filme button:hover { background-color: #00cc88; }
+  .filmes { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+  .filme { background-color: #1f1f1f; border-radius: 10px; padding: 15px; position: relative; transition: transform 0.3s; }
+  .filme:hover { transform: scale(1.03); }
+  .filme img { width: 100%; border-radius: 8px; height: 350px; object-fit: cover; }
+  .filme h3 { margin: 10px 0 5px; color: #00ffaa; }
+  .filme p { font-size: 14px; color: #ccc; min-height: 60px; }
+  .btn-apagar { position: absolute; top: 10px; right: 10px; background-color: #ff4444; border: none; border-radius: 4px; color: white; padding: 5px 10px; cursor: pointer; font-weight: bold; transition: background-color 0.3s; }
+  .btn-apagar:hover { background-color: #cc0000; }
+  footer { background-color: #1f1f1f; text-align: center; padding: 15px; font-size: 14px; color: #888; }
 </style>
 </head>
 <body>
 
 <header>
-    <h1>🎥 Filmes Estranhos</h1>
+  <h1>🎥 Filmes Estranhos</h1>
 </header>
 
 <nav>
-    <a href="index.html">Início</a>
-    <a href="filmes.html">Filmes</a>
-    <a href="#">Sobre</a>
+  <a href="index.html">Início</a>
+  <a href="filmes.html">Filmes</a>
+  <a href="#">Sobre</a>
 </nav>
 
 <main>
-    <h2>🎬 Lista de Filmes Estranhos</h2>
+  <h2>🎬 Lista de Filmes Estranhos</h2>
 
-    <form id="form-filme">
-        <input type="text" id="input-filme" placeholder="Nome do filme" required />
-        <button type="submit">Adicionar Filme</button>
-    </form>
+  <form id="form-filme">
+    <input type="text" id="input-filme" placeholder="Nome do filme" required />
+    <button type="submit">Adicionar Filme</button>
+  </form>
 
-    <div class="filmes" id="lista-filmes"></div>
+  <div class="filmes" id="lista-filmes"></div>
 </main>
 
 <footer>
-    &copy; 2025 Filmes Estranhos. Todos os direitos reservados.
+  &copy; 2025 Filmes Estranhos. Todos os direitos reservados.
 </footer>
 
 <script>
-    const sheetDbUrl = 'https://sheetdb.io/api/v1/dlats2maboyum';
-    const tmdbApiKey = 'SUA_CHAVE_TMDB_AQUI';  // Coloque sua chave TMDb aqui
-    const omdbApiKey = '6cbfb854'; // Sua chave OMDb
+  const sheetDbUrl = 'https://sheetdb.io/api/v1/dlats2maboyum';
+  const tmdbApiKey = 'SUA_CHAVE_TMDB_AQUI'; // Coloque sua chave TMDb aqui
+  const omdbApiKey = '6cbfb854'; // Chave OMDb
 
-    const listaFilmes = document.getElementById('lista-filmes');
-    const form = document.getElementById('form-filme');
-    const inputFilme = document.getElementById('input-filme');
-    let filmesExistentes = [];
+  const listaFilmes = document.getElementById('lista-filmes');
+  const form = document.getElementById('form-filme');
+  const inputFilme = document.getElementById('input-filme');
+  let filmesExistentes = [];
 
-    async function carregarFilmes() {
-        const res = await fetch(sheetDbUrl);
-        const dados = await res.json();
-        filmesExistentes = dados.map(item => item.Filmes.toLowerCase());
-        listaFilmes.innerHTML = '';
-        dados.forEach(item => criarCartaoFilme(item));
-    }
+  async function carregarFilmes() {
+    const res = await fetch(sheetDbUrl);
+    const dados = await res.json();
+    filmesExistentes = dados.map(f => f.Filmes.toLowerCase());
+    listaFilmes.innerHTML = '';
+    dados.forEach(f => criarCartaoFilme(f));
+  }
 
-    function criarCartaoFilme(item) {
-        const divFilme = document.createElement('div');
-        divFilme.classList.add('filme');
-        const img = item.Poster || 'https://via.placeholder.com/300x450?text=Sem+Imagem';
-        const desc = item.Descricao || 'Descrição não disponível.';
-        divFilme.innerHTML = `
-            <button class="btn-apagar" data-id="${item.id || item.ID || item._id || item.row}">X</button>
-            <img src="${img}" alt="${item.Filmes}" />
-            <h3>${item.Filmes}</h3>
-            <p>${desc}</p>
-        `;
-        divFilme.querySelector('.btn-apagar').addEventListener('click', () => apagarFilme(item));
-        listaFilmes.appendChild(divFilme);
-    }
+  function criarCartaoFilme(filme) {
+    const div = document.createElement('div');
+    div.classList.add('filme');
 
-    async function apagarFilme(item) {
-        let id = item.id || item.ID || item._id || item.row;
-        if (!id) {
-            alert('Não foi possível identificar o filme para apagar.');
-            return;
-        }
-        if (!confirm(`Tem certeza que deseja apagar "${item.Filmes}"?`)) return;
-        try {
-            const res = await fetch(`${sheetDbUrl}/Filmes Estranhos/${id}`, { method: 'DELETE' });
-            if (res.ok) {
-                alert('Filme apagado com sucesso!');
-                carregarFilmes();
-            } else {
-                alert('Erro ao apagar filme.');
-            }
-        } catch {
-            alert('Erro na comunicação com a API.');
-        }
-    }
+    const poster = filme.Poster && filme.Poster !== '' ? filme.Poster : 'https://via.placeholder.com/300x450?text=Sem+Imagem';
+    const descricao = filme.Descricao && filme.Descricao !== '' ? filme.Descricao : 'Descrição não disponível.';
 
-    async function buscarDetalhesFilme(nome) {
-        try {
-            const resTmdb = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${tmdbApiKey}&language=pt-BR&query=${encodeURIComponent(nome)}`);
-            const dataTmdb = await resTmdb.json();
-            if (dataTmdb.results && dataTmdb.results.length > 0) {
-                const f = dataTmdb.results[0];
-                return {
-                    titulo: f.title,
-                    descricao: f.overview || 'Descrição não disponível.',
-                    poster: f.poster_path ? `https://image.tmdb.org/t/p/w500${f.poster_path}` : null
-                };
-            }
-        } catch {}
+    div.innerHTML = `
+      <button class="btn-apagar" data-id="${filme._id || filme.ID || filme.row}">X</button>
+      <img src="${poster}" alt="${filme.Filmes}" />
+      <h3>${filme.Filmes}</h3>
+      <p>${descricao}</p>
+    `;
 
-        try {
-            const resOmdb = await fetch(`https://www.omdbapi.com/?apikey=${omdbApiKey}&t=${encodeURIComponent(nome)}&plot=short&language=pt`);
-            const dataOmdb = await resOmdb.json();
-            if (dataOmdb && dataOmdb.Response === 'True') {
-                return {
-                    titulo: dataOmdb.Title,
-                    descricao: dataOmdb.Plot !== 'N/A' ? dataOmdb.Plot : 'Descrição não disponível.',
-                    poster: dataOmdb.Poster !== 'N/A' ? dataOmdb.Poster : null
-                };
-            }
-        } catch {}
-
-        return {
-            titulo: nome,
-            descricao: 'Descrição não disponível.',
-            poster: null
-        };
-    }
-
-    async function adicionarFilme(nome) {
-        if (filmesExistentes.includes(nome.toLowerCase())) {
-            alert('Esse filme já está na lista!');
-            return;
-        }
-
-        const detalhes = await buscarDetalhesFilme(nome);
-
-        const bodyData = {
-            data: [{
-                Filmes: detalhes.titulo,
-                Descricao: detalhes.descricao,
-                Poster: detalhes.poster || ''
-            }]
-        };
-
-        const res = await fetch(sheetDbUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bodyData)
-        });
-
-        if (res.ok) {
-            alert('Filme adicionado com sucesso!');
-            inputFilme.value = '';
-            carregarFilmes();
-        } else {
-            alert('Erro ao adicionar filme. Tente novamente.');
-        }
-    }
-
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        const filme = inputFilme.value.trim();
-        if (filme) adicionarFilme(filme);
+    div.querySelector('.btn-apagar').addEventListener('click', async () => {
+      if(confirm(`Quer mesmo apagar o filme "${filme.Filmes}"?`)) {
+        await apagarFilme(filme);
+      }
     });
 
-    carregarFilmes();
+    listaFilmes.appendChild(div);
+  }
+
+  async function apagarFilme(filme) {
+    const id = filme._id || filme.ID || filme.row;
+    if (!id) {
+      alert('ID do filme não encontrado.');
+      return;
+    }
+    // DELETE na SheetDB (você pode precisar adaptar conforme seu schema)
+    const res = await fetch(`${sheetDbUrl}/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      alert('Filme apagado com sucesso!');
+      carregarFilmes();
+    } else {
+      alert('Erro ao apagar o filme.');
+    }
+  }
+
+  async function buscarFilmeTMDB(nome) {
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${tmdbApiKey}&language=pt-BR&query=${encodeURIComponent(nome)}`;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const filme = data.results[0];
+        return {
+          titulo: filme.title,
+          descricao: filme.overview || 'Descrição não disponível.',
+          poster: filme.poster_path ? `https://image.tmdb.org/t/p/w500${filme.poster_path}` : ''
+        };
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+
+  async function buscarFilmeOMDB(nome) {
+    const url = `https://www.omdbapi.com/?apikey=${omdbApiKey}&t=${encodeURIComponent(nome)}&plot=short&language=pt`;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.Response === 'True') {
+        return {
+          titulo: data.Title,
+          descricao: data.Plot !== 'N/A' ? data.Plot : 'Descrição não disponível.',
+          poster: data.Poster !== 'N/A' ? data.Poster : ''
+        };
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+
+  async function adicionarFilme(nome) {
+    if (filmesExistentes.includes(nome.toLowerCase())) {
+      alert('Esse filme já está na lista!');
+      return;
+    }
+
+    let detalhes = await buscarFilmeTMDB(nome);
+    if (!detalhes) detalhes = await buscarFilmeOMDB(nome);
+    if (!detalhes) {
+      alert('Filme não encontrado nas APIs.');
+      return;
+    }
+
+    const body = {
+      data: [{
+        Filmes: detalhes.titulo,
+        Descricao: detalhes.descricao,
+        Poster: detalhes.poster
+      }]
+    };
+
+    const res = await fetch(sheetDbUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (res.ok) {
+      alert('Filme adicionado com sucesso!');
+      inputFilme.value = '';
+      carregarFilmes();
+    } else {
+      alert('Erro ao adicionar filme.');
+    }
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const nome = inputFilme.value.trim();
+    if (nome) adicionarFilme(nome);
+  });
+
+  carregarFilmes();
 </script>
 
 </body>
