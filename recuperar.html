@@ -15,7 +15,7 @@
   </div>
 
   <script>
-    const API = "https://sheetdb.io/api/v1/dlats2maboyum?sheet=página2";
+    const API = "https://sheetdb.io/api/v1/dlats2maboyum?sheet=usuarios";
 
     function recuperar() {
       const usuario = document.getElementById('usuario').value.trim();
@@ -29,7 +29,8 @@
           } else {
             alert("Usuário não encontrado.");
           }
-        });
+        })
+        .catch(() => alert("Erro na API."));
     }
   </script>
 </body>
